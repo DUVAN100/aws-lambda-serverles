@@ -1,0 +1,4 @@
+StepFunctionLogs: 
+  Type: AWS::Logs::LogGroup
+  Properties:
+    LogGroupName: /aws/step-functions/${self:service}-stepFunction

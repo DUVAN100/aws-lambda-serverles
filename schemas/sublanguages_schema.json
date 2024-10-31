@@ -1,0 +1,21 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Payload of subtimes_info lambda API",
+    "type": "object",
+    "properties": {
+      "Region": {
+        "type": "object"
+      },
+      "Country": {
+        "type": "object"
+      },
+      "Language": {
+        "type": "object"
+      },
+      "Time": {
+        "type": "object"
+      }
+    },
+    "required":["Region", "Country", "Language", "Time"]
+    }
+  

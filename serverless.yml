@@ -1,0 +1,148 @@
+service: countries-info-service
+frameworkVersion: '3'
+provider:
+  name: aws
+  runtime: python3.10
+  region: us-east-1
+  stage: dev
+
+plugins:
+  - serverless-python-requirements
+  - serverless-step-functions
+
+functions:
+  getCountriesInfo:
+    tracing: true
+    name: ${sls:stage}-countries-info
+    handler: app/apis/get_countries_info.lambda_handler
+    layers:
+      - Ref: PythonRequirementsLambdaLayer
+    events:
+      - http:
+          path: /countries_info
+          method: GET
+    timeout: 30
+    memorySize: 2048
+    architecture: x86_64
+
+  getSubRegionsInfo:
+    tracing: true
+    name: ${sls:stage}-subregions-info
+    handler: app/apis/get_subregions_info.lambda_handler
+    layers:
+      - Ref: PythonRequirementsLambdaLayer
+    events:
+      - http:
+          path: /subregions_info
+          method: POST
+          request:
+            schemas:
+              application/json: ${file(schemas/subregions_schema.json)}
+    timeout: 30
+    memorySize: 2048
+    architecture: x86_64
+
+  getSubCountriesInfo:
+    tracing: true
+    name: ${sls:stage}-subcountries-info
+    handler: app/apis/get_subcountries_info.lambda_handler
+    layers:
+      - Ref: PythonRequirementsLambdaLayer
+    events:
+      - http:
+          path: /subcountries_info
+          method: POST
+          request:
+            schemas:
+              application/json: ${file(schemas/subcountries_schema.json)}
+    timeout: 30
+    memorySize: 2048
+    architecture: x86_64
+  
+  getSubLanguagesInfo:
+    tracing: true
+    name: ${sls:stage}-sublanguages-info
+    handler: app/apis/get_sublanguages_info.lambda_handler
+    layers:
+      - Ref: PythonRequirementsLambdaLayer
+    events:
+      - http:
+          path: /sublanguages_info
+          method: POST
+          request:
+            schemas:
+              application/json: ${file(schemas/sublanguages_schema.json)}
+    timeout: 30
+    memorySize: 2048
+    architecture: x86_64
+
+  getSubTimesInfo:
+    tracing: true
+    name: ${sls:stage}-subtimes-info
+    handler: app/apis/get_subtimes_info.lambda_handler
+    layers:
+      - Ref: PythonRequirementsLambdaLayer
+    events:
+      - http:
+          path: /subtimes_info
+          method: POST
+          request:
+            schemas:
+              application/json: ${file(schemas/subtimes_schema.json)}
+    timeout: 30
+    memorySize: 2048
+    architecture: x86_64
+  
+  TrackingErrors:
+    tracing: true
+    name: ${sls:stage}-tracking_errors
+    handler: app/apis/tracking_errors.lambda_handler
+    layers:
+      - Ref: PythonRequirementsLambdaLayer
+    events:
+      - http:
+          path: /tracking_errors
+          method: POST
+    timeout: 30
+    memorySize: 2048
+    architecture: x86_64
+
+
+resources:
+  Resources:
+    StepFunctionApiMachineRole: ${file(resources/stepFunctionRole.yml):StepFunctionApiMachineRole}
+    StepFunctionLogs: ${file(resources/logs.yml):StepFunctionLogs}
+
+stepFunctions:
+  stateMachines:
+    countries-state-machine: ${file(step_functions/serverless.yml):countries-state-machine}
+
+
+custom:
+  bucket: ${env:BUCKET, 'countries-info-serverless'}
+  pythonRequirements:
+    dockerizePip: true
+    layer:
+      PythonRequirementsLambdaLayer:
+        name: PythonRequirementsLambdaLayer
+        description: "layer with requirements for get_countries_info API"
+        compatibleRuntimes:
+          - python3.10
+        compatibleArchitectures:
+          - x86_64
+       
+
+package:
+  include:
+    - get_countries_info.py
+    - README.md
+    - serverless.yml
+  exclude:
+    - venv/**
+    - tests/**
+    - node_modules/**
+    - __pycache__/**
+    - .env
+    - package.json
+    - package-lock.json
+    - test_local_lambda_handler.py

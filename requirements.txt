@@ -1,0 +1,8 @@
+fastapi
+gunicorn
+aiohttp
+numpy
+pandas
+requests
+uvicorn
+boto3

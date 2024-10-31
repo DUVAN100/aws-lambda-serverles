@@ -1,0 +1,35 @@
+StepFunctionApiMachineRole:
+ Type: AWS::IAM::Role
+ Properties:
+   RoleName: StepFunctionApiMachineRole
+   AssumeRolePolicyDocument:
+     Statement:
+     - Effect: Allow
+       Principal:
+         Service:
+           - 'states.amazonaws.com'
+       Action:
+         - 'sts:AssumeRole'
+   Policies:
+     - PolicyName: statePolicy
+       PolicyDocument:
+         Statement:
+          - Effect: Allow
+            Action: 
+              - sqs:*
+            Resource: '*'
+          - Effect: Allow
+            Action: 
+              - 'lambda:InvokeFunction'
+            Resource: '*'
+          - Effect: Allow
+            Action:
+              - logs:CreateLogDelivery
+              - logs:GetLogDelivery
+              - logs:UpdateLogDelivery
+              - logs:DeleteLogDelivery
+              - logs:ListLogDeliveries
+              - logs:PutResourcePolicy
+              - logs:DescribeResourcePolicies
+              - logs:DescribeLogGroups
+            Resource: '*'
